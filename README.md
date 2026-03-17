@@ -1,2 +1,2 @@
 # GameTracker
-PlayTrack – web application for managing gaming backlog
+GameTracker – web application for managing gaming backlog
