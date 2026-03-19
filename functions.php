@@ -18,3 +18,18 @@ function gametracker_enqueue_assets() {
 }
 
 add_action('wp_enqueue_scripts', 'gametracker_enqueue_assets');
+
+function gametracker_register_game_post_type() {
+    register_post_type('game', array(
+        'labels' => array(
+            'name' => 'Games',
+            'singular_name' => 'Game'
+        ),
+        'public' => true,
+        'has_archive' => true,
+        'menu_icon' => 'dashicons-controller',
+        'supports' => array('title', 'editor', 'thumbnail'),
+    ));
+}
+
+add_action('init', 'gametracker_register_game_post_type');

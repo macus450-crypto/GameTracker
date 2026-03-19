@@ -231,6 +231,12 @@ img {
   border-radius: 16px;
   background: linear-gradient(135deg, #1d4ed8, #7c3aed);
 }
+.game-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 16px;
+}
 
 .game-card h3 {
   margin: 0 0 10px;

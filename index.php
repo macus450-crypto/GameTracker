@@ -40,23 +40,32 @@
       </div>
 
       <div class="games-grid">
-        <article class="game-card">
-          <div class="game-card-image"></div>
-          <h3>Cyberpunk 2077</h3>
-          <p>Main story: 25h</p>
-        </article>
+        <?php
+        $query = new WP_Query(array(
+        'post_type' => 'game',
+        'posts_per_page' => 3
+        ));
+
+        if ($query->have_posts()) :
+        while ($query->have_posts()) : $query->the_post();
+        ?>
 
         <article class="game-card">
-          <div class="game-card-image"></div>
-          <h3>The Witcher 3</h3>
-          <p>Main story: 50h</p>
+          <div class="game-card-image">
+            <?php if (has_post_thumbnail()) : ?>
+              <?php the_post_thumbnail('medium'); ?>
+            <?php endif; ?>
+          </div>
+
+          <h3><?php the_title(); ?></h3>
+          <p><?php the_excerpt(); ?></p>
         </article>
 
-        <article class="game-card">
-          <div class="game-card-image"></div>
-          <h3>Resident Evil 4</h3>
-          <p>Main story: 16h</p>
-        </article>
+        <?php
+        endwhile;
+          wp_reset_postdata();
+        endif;
+        ?>
       </div>
     </div>
   </section>
