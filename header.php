@@ -13,7 +13,7 @@
     <a href="<?php echo esc_url(home_url('/')); ?>" class="logo">GameTracker</a>
 
     <nav class="main-nav">
-      <a href="#">Browse Games</a>
+      <a href="<?php echo esc_url(site_url('/all-games')); ?>">Browse Games</a>
       <a href="#">My Backlog</a>
       <a href="#">Stats</a>
       <a href="#">Login</a>
