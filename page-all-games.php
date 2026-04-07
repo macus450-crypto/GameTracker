@@ -16,10 +16,12 @@ Template Name: All Games Page
 
       <div class="games-grid">
         <?php
+        $paged = get_query_var('paged') ? get_query_var('paged') : 1;
+
         $games_query = new WP_Query(array(
           'post_type'      => 'game',
           'posts_per_page' => 12,
-          'paged'          => get_query_var('paged') ? get_query_var('paged') : 1
+          'paged'          => $paged
         ));
 
         if ($games_query->have_posts()) :
@@ -30,6 +32,8 @@ Template Name: All Games Page
             <div class="game-card-image">
               <?php if (has_post_thumbnail()) : ?>
                 <?php the_post_thumbnail('medium'); ?>
+              <?php else : ?>
+                <img src="<?php echo get_template_directory_uri(); ?>/assets/images/placeholder.jpg" alt="No image">
               <?php endif; ?>
             </div>
 
@@ -44,13 +48,14 @@ Template Name: All Games Page
               $completionist_hours = get_post_meta(get_the_ID(), '_completionist_hours', true);
             ?>
 
-            <?php if ($main_story_hours) : ?>
-              <p>Main Story: <?php echo esc_html($main_story_hours); ?>h</p>
-            <?php endif; ?>
-
-            <?php if ($completionist_hours) : ?>
-              <p>Completionist: <?php echo esc_html($completionist_hours); ?>h</p>
-            <?php endif; ?>
+            <div class="game-meta">
+              <?php if ($main_story_hours) : ?>
+                <p>Main Story: <?php echo esc_html($main_story_hours); ?>h</p>
+              <?php endif; ?>
+              <?php if ($completionist_hours) : ?>
+                <p>Completionist: <?php echo esc_html($completionist_hours); ?>h</p>
+              <?php endif; ?>
+            </div>
 
             <p><?php the_excerpt(); ?></p>
 
@@ -59,6 +64,18 @@ Template Name: All Games Page
 
         <?php
           endwhile;
+        ?>
+        <div class="pagination">
+          <?php
+          echo paginate_links(array(
+            'total' => $games_query->max_num_pages,
+            'current' => $paged,
+            'prev_text' => '← Previous',
+            'next_text' => 'Next →'
+          ));
+          ?>
+        </div>
+        <?php 
           wp_reset_postdata();
         else :
         ?>

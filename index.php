@@ -51,10 +51,10 @@
         ?>
 
         <article class="game-card">
-  <div class="game-card-image">
-    <?php if (has_post_thumbnail()) : ?>
-      <?php the_post_thumbnail('medium'); ?>
-    <?php endif; ?>
+      <div class="game-card-image">
+        <?php if (has_post_thumbnail()) : ?>
+        <?php the_post_thumbnail('medium'); ?>
+        <?php endif; ?>
   </div>
 
   <h3>
