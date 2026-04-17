@@ -84,3 +84,53 @@ function gametracker_save_game_meta($post_id) {
 }
 
 add_action('save_post_game', 'gametracker_save_game_meta');
+
+function gametracker_get_rawg_games($page = 1, $page_size = 12) {
+    $page = max(1, (int) $page);
+    $page_size = max(1, (int) $page_size);
+
+    $api_key = defined('RAWG_API_KEY') ? RAWG_API_KEY : '';
+
+    if (empty($api_key)) {
+        return false;
+    }
+
+    $transient_key = 'gametracker_rawg_games_' . $page . '_' . $page_size;
+    $cached_data = get_transient($transient_key);
+
+    if ($cached_data !== false) {
+        return $cached_data;
+    }
+
+    $url = add_query_arg(array(
+        'key'       => $api_key,
+        'page'      => $page,
+        'page_size' => $page_size,
+    ), 'https://api.rawg.io/api/games');
+
+    $response = wp_remote_get($url, array(
+        'timeout' => 15,
+    ));
+
+    if (is_wp_error($response)) {
+        return false;
+    }
+
+    $status_code = wp_remote_retrieve_response_code($response);
+
+    if ($status_code !== 200) {
+        return false;
+    }
+
+    $body = wp_remote_retrieve_body($response);
+    $data = json_decode($body, true);
+
+    if (!is_array($data) || !isset($data['results'])) {
+        return false;
+    }
+
+    set_transient($transient_key, $data, HOUR_IN_SECONDS);
+
+    return $data;
+}
+    
