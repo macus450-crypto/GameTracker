@@ -1,37 +1,56 @@
 # GameTracker
 
-GameTracker is a WordPress-based web application for managing a gaming backlog.  
-This project is currently in development and is being built as a portfolio project.
+## Project Overview
+GameTracker is a comprehensive application designed to help users track their gaming statistics and achievements across multiple platforms. It provides a user-friendly interface to monitor your progress and compare it with friends.
 
-## Project status
-Work in progress.
+## Features
+- **User Accounts:** Create and manage your personal accounts.
+- **Game Tracking:** Keep track of hours played, achievements earned, and levels completed.
+- **Friends Comparison:** View and compare your statistics with friends.
+- **Cross-Platform Support:** Track games across various gaming platforms.
+- **Customizable Profiles:** Customize your gaming profile as per your preference.
 
-## Current features
-- Custom WordPress theme
-- Homepage layout
-- Header and footer
-- Custom game templates
-- All Games page
-- Single Game page structure
+## Tech Stack
+- **Frontend:** React.js
+- **Backend:** Node.js with Express
+- **Database:** MongoDB
+- **Authentication:** JWT (JSON Web Tokens)
+- **Styling:** CSS and Material-UI
 
-## Planned features
-- External game API integration
-- Search system
-- User accounts
-- Ratings
-- Comments
-- Personal backlog system
+## Installation Instructions
+1. Clone the repository.
+   ```bash
+   git clone https://github.com/macus450-crypto/GameTracker.git
+   cd GameTracker
+   ```
+2. Install dependencies.
+   ```bash
+   npm install
+   ```
+3. Set up environment variables.
+4. Start the application.
+   ```bash
+   npm start
+   ```
 
-## Tech stack
-- WordPress
-- PHP
-- CSS
-- JavaScript
+## Project Structure
+```
+GameTracker/
+|-- client/               # Frontend code
+|-- server/               # Backend code
+|-- README.md             # Project documentation
+|-- package.json          # Node.js dependencies
+```  
 
-## Goal
-The goal of this project is to build a professional portfolio-ready gaming web app with real-world features.
+## Contribution Guidelines
+We welcome contributions from the community! Please follow the steps below:
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Make your changes and commit them with clear messages.
+4. Push your changes to your fork.
+5. Submit a pull request detailing your changes.
 
-## Current status
-This project is currently under active development.
-The visual layer and core theme structure are already implemented.
-The next steps are API integration, search, ratings, and user features.
+Thank you for contributing!  
+
+## License
+This project is licensed under the MIT License.
