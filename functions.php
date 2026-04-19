@@ -85,52 +85,113 @@ function gametracker_save_game_meta($post_id) {
 
 add_action('save_post_game', 'gametracker_save_game_meta');
 
-function gametracker_get_rawg_games($page = 1, $page_size = 12) {
-    $page = max(1, (int) $page);
-    $page_size = max(1, (int) $page_size);
+function gametracker_get_rawg_games($page = 1, $page_size = 12, $search = '', $ordering = '', $genre = '') {
+    $page = min(40, max(1, (int) $page));
+    $page_size = min(40, max(1, (int) $page_size));
+    $search = trim((string) $search);
+    $ordering = trim((string) $ordering);
+    $genre = trim((string) $genre);
 
     $api_key = defined('RAWG_API_KEY') ? RAWG_API_KEY : '';
 
     if (empty($api_key)) {
-        return false;
+        return ['results' => []];
     }
 
-    $transient_key = 'gametracker_rawg_games_' . $page . '_' . $page_size;
+    $transient_args = array(
+        'page' => $page,
+        'page_size' => $page_size,
+    );
+
+    if ($search !== '') {
+        $transient_args['search'] = $search;
+    }
+
+    if ($ordering !== '') {
+        $transient_args['ordering'] = $ordering;
+    }
+
+    if ($genre !== '') {
+        $transient_args['genres'] = $genre;
+    }
+
+    $transient_key = 'gametracker_rawg_games_' . md5(json_encode($transient_args));
+
     $cached_data = get_transient($transient_key);
 
     if ($cached_data !== false) {
         return $cached_data;
     }
 
-    $url = add_query_arg(array(
-        'key'       => $api_key,
-        'page'      => $page,
+    $args = array(
+        'key' => $api_key,
+        'page' => $page,
         'page_size' => $page_size,
-    ), 'https://api.rawg.io/api/games');
+    );
+
+    if ($search !== '') {
+        $args['search'] = $search;
+    }
+
+    if ($ordering !== '') {
+        $args['ordering'] = $ordering;
+    }
+
+    if ($genre !== '') {
+        $args['genres'] = $genre;
+    }
+
+    $url = add_query_arg($args, 'https://api.rawg.io/api/games');
 
     $response = wp_remote_get($url, array(
         'timeout' => 15,
     ));
 
     if (is_wp_error($response)) {
-        return false;
+        $fallback_data = get_transient('gametracker_rawg_last_success');
+
+        if ($fallback_data !== false) {
+            return $fallback_data;
+        }
+
+        return ['results' => []];
     }
 
     $status_code = wp_remote_retrieve_response_code($response);
 
     if ($status_code !== 200) {
-        return false;
+        $fallback_data = get_transient('gametracker_rawg_last_success');
+
+        if ($fallback_data !== false) {
+            return $fallback_data;
+        }
+
+        return ['results' => []];
     }
 
     $body = wp_remote_retrieve_body($response);
     $data = json_decode($body, true);
 
     if (!is_array($data) || !isset($data['results'])) {
-        return false;
+        $fallback_data = get_transient('gametracker_rawg_last_success');
+
+        if ($fallback_data !== false) {
+            return $fallback_data;
+        }
+
+        return ['results' => []];
     }
 
-    set_transient($transient_key, $data, HOUR_IN_SECONDS);
+    if ($page === 1) {
+        $time = HOUR_IN_SECONDS;
+    } else {
+        $time = 10 * MINUTE_IN_SECONDS;
+    }
+
+    set_transient('gametracker_rawg_last_success', $data, DAY_IN_SECONDS);
+    set_transient($transient_key, $data, $time);
 
     return $data;
 }
+
     
