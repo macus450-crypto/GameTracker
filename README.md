@@ -1,106 +1,116 @@
-# GameTracker
+# 🎮 GameTracker
 
-## Project Overview
-GameTracker is a WordPress-based web application for managing a gaming backlog.  
-It allows users to browse games, view details, and (in future versions) manage their personal collection, ratings, and progress.
-
-This project is built as a portfolio application focused on real-world development practices such as API integration, performance optimization, and scalable architecture.
+GameTracker is a custom WordPress-based web application for browsing and managing a video game library.
+The project focuses on integrating external APIs, optimizing performance with caching, and building a scalable structure using WordPress as a backend.
 
 ---
 
-## Key Technical Features
+## 🚀 Features
 
-- Integration with external API (RAWG) using WordPress HTTP API (`wp_remote_get`)
-- Server-side caching with WordPress Transients API (performance optimization)
-- Dynamic query building using `add_query_arg()`
-- Secure API key handling (excluded from repository)
-- Custom Post Type (`game`) with dedicated templates
-- Pagination system using `WP_Query` and `paginate_links()`
-- Custom WordPress theme structure
+* 🔍 Browse games fetched from external API (RAWG)
+* ⚡ API data caching using WordPress Transients (performance optimization)
+* 📄 Custom post type: **Games**
+* 🧩 Custom templates:
 
----
-
-## How It Works
-
-1. User opens the "All Games" page
-2. Application checks if data exists in cache (transients)
-3. If cached → data is returned instantly (no API call)
-4. If not cached → request is sent to RAWG API
-5. Response is stored in cache for a defined time
-6. Data is rendered using custom WordPress templates
-
-This approach reduces API calls and significantly improves performance.
+  * All Games page (pagination)
+  * Single Game page
+* 🖼️ Game cards with image, title, and details
+* 📚 Pagination system (custom WP_Query implementation)
 
 ---
 
-## Current Features
+## 🧠 Key Concepts Used
 
-- Custom WordPress theme
-- Homepage layout (gaming-style UI)
-- "All Games" page with dynamic data
-- Single Game page template
-- External API integration (RAWG)
-- Basic caching system
+This project is not based on plugins – it focuses on **custom development**.
 
----
-
-## Planned Features
-
-- Search system (API-based filtering)
-- User accounts (authentication)
-- Game rating system (1–5 stars per user)
-- Comments and reviews
-- Personal backlog system
-- Advanced filtering (platforms, genres, popularity)
+* WordPress Theme Development
+* Custom Post Types (CPT)
+* WP_Query (custom loops & pagination)
+* External API Integration (RAWG)
+* Caching with `set_transient()`
+* Clean PHP structure inside WordPress
 
 ---
 
-## Tech Stack
+## 🌐 API Integration
 
-- **CMS:** WordPress
-- **Backend:** PHP
-- **Frontend:** HTML, CSS, JavaScript
-- **API:** RAWG Video Games Database API
-- **Data Handling:** WordPress Transients API (caching)
+Game data is fetched dynamically from the RAWG API.
 
----
+* Request handling using `wp_remote_get()`
+* Query parameters (pagination, search, filters)
+* Response parsing (`json_decode`)
+* Performance optimization via caching
 
-## Project Structure (simplified)
+Example logic:
 
-GameTracker/
-│
-├── functions.php # Core logic (API, hooks, setup)
-├── single-game.php # Single game template
-├── page-all-games.php # Games listing page
-├── assets/ # CSS / JS
-└── README.md
+```php
+$cached_data = get_transient($transient_key);
 
----
-
-## Why This Project
-
-This project is designed to simulate a real-world web application, not just a static website.
-
-It demonstrates:
-- working with external APIs
-- backend logic in WordPress
-- performance optimization (caching)
-- structured and scalable code approach
+if ($cached_data !== false) {
+    return $cached_data;
+}
+```
 
 ---
 
-## Status
+## ⚡ Performance Optimization
 
-🚧 Work in progress — actively developed and extended with new features.
+To reduce API calls and improve speed:
 
----
-
-## Future Goals
-
-The goal is to evolve GameTracker into a fully functional application with user interaction, personalized data, and production-level architecture.
+* Transient caching is used (`HOUR_IN_SECONDS`)
+* Unique cache keys based on query parameters
+* Avoids unnecessary external requests
 
 ---
 
-## Author
+## 📁 Project Structure (simplified)
 
-Created as a portfolio project focused on becoming a job-ready WordPress / Web Developer.
+```
+/theme
+  ├── functions.php        # API logic + hooks
+  ├── page-all-games.php   # All games view
+  ├── single-game.php      # Single game page
+  ├── style.css
+```
+
+---
+
+## 🛠️ Technologies
+
+* WordPress (Custom Theme)
+* PHP
+* JavaScript (basic DOM)
+* HTML / CSS
+
+---
+
+## 🎯 Purpose of the Project
+
+This project was built to:
+
+* Learn real-world API integration
+* Understand WordPress beyond plugins
+* Practice performance optimization
+
+---
+
+## 🔮 Future Improvements
+
+* 🔐 User accounts & authentication
+* ⭐ Game rating system
+* 💬 Comments system
+* 📦 Personal game backlog
+* 🔎 Advanced filtering & search
+
+---
+
+## 📸 Screenshots
+
+![home_page](assets/screenshots/home_page.png)
+![all_games_page](assets/screenshots/all_games_page.png)
+
+---
+
+## ⚠️ Notes
+
+API key is stored outside the repository for security reasons.
