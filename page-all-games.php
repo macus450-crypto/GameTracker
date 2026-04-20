@@ -15,74 +15,78 @@ Template Name: All Games Page
       </div>
 
       <div class="games-grid">
-        <?php
-        $paged = get_query_var('paged') ? get_query_var('paged') : 1;
+      <?php
+      $paged = get_query_var('paged') ? (int) get_query_var('paged') : 1;
 
-        $games_query = new WP_Query(array(
-          'post_type'      => 'game',
-          'posts_per_page' => 12,
-          'paged'          => $paged
-        ));
+      $games_data = gametracker_get_rawg_games($paged, 12);
 
-        if ($games_query->have_posts()) :
-          while ($games_query->have_posts()) : $games_query->the_post();
-        ?>
+      if (!empty($games_data['results'])) :
+        foreach ($games_data['results'] as $game) :
+      ?>
+        <article class="game-card">
+          <div class="game-card-image">
+            <?php if (!empty($game['background_image'])) : ?>
+              <img src="<?php echo esc_url($game['background_image']); ?>" alt="<?php echo esc_attr($game['name']); ?>">
+            <?php else : ?>
+              <img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/placeholder.jpg'); ?>" alt="No image">
+            <?php endif; ?>
+          </div>
 
-          <article class="game-card">
-            <div class="game-card-image">
-              <?php if (has_post_thumbnail()) : ?>
-                <?php the_post_thumbnail('medium'); ?>
-              <?php else : ?>
-                <img src="<?php echo get_template_directory_uri(); ?>/assets/images/placeholder.jpg" alt="No image">
-              <?php endif; ?>
-            </div>
+          <h3>
+            <?php echo esc_html($game['name']); ?>
+          </h3>
 
-            <h3>
-              <a href="<?php the_permalink(); ?>">
-                <?php the_title(); ?>
-              </a>
-            </h3>
+          <div class="game-meta">
+            <?php if (!empty($game['released'])) : ?>
+              <p>Released: <?php echo esc_html($game['released']); ?></p>
+           <?php endif; ?>
 
+            <?php if (!empty($game['rating'])) : ?>
+              <p>Rating: <?php echo esc_html($game['rating']); ?>/5</p>
+            <?php endif; ?>
+          </div>
+
+          <?php if (!empty($game['genres'])) : ?>
+            <p>
+              Genres:
+              <?php
+              $genre_names = array_map(function ($genre) {
+                return $genre['name'];
+              }, $game['genres']);
+
+              echo esc_html(implode(', ', $genre_names));
+              ?>
+            </p>
+          <?php endif; ?>
+
+          <?php if (!empty($game['slug'])) : ?>
+            <a href="<?php echo esc_url('https://rawg.io/games/' . $game['slug']); ?>" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
+              View Details
+            </a>
+          <?php endif; ?>
+        </article>
+      <?php
+        endforeach;
+      ?>
+          <div class="pagination">
             <?php
-              $main_story_hours = get_post_meta(get_the_ID(), '_main_story_hours', true);
-              $completionist_hours = get_post_meta(get_the_ID(), '_completionist_hours', true);
+            $total_pages = !empty($games_data['count']) ? ceil($games_data['count'] / 12) : 1;
+
+            echo paginate_links(array(
+              'total'      => $total_pages,
+              'current'    => $paged,
+              'prev_text'  => '← Previous',
+              'next_text'  => 'Next →'
+            ));
             ?>
-
-            <div class="game-meta">
-              <?php if ($main_story_hours) : ?>
-                <p>Main Story: <?php echo esc_html($main_story_hours); ?>h</p>
-              <?php endif; ?>
-              <?php if ($completionist_hours) : ?>
-                <p>Completionist: <?php echo esc_html($completionist_hours); ?>h</p>
-              <?php endif; ?>
-            </div>
-
-            <p><?php the_excerpt(); ?></p>
-
-            <a href="<?php the_permalink(); ?>" class="btn btn-primary">View Details</a>
-          </article>
-
-        <?php
-          endwhile;
-        ?>
-        <div class="pagination">
+          </div>
           <?php
-          echo paginate_links(array(
-            'total' => $games_query->max_num_pages,
-            'current' => $paged,
-            'prev_text' => '← Previous',
-            'next_text' => 'Next →'
-          ));
-          ?>
-        </div>
-        <?php 
-          wp_reset_postdata();
         else :
         ?>
-          <p>No games found.</p>
-        <?php endif; ?>
+    <p>No games found.</p>
+    <?php endif; ?>
+        </div>
       </div>
-    </div>
   </section>
 </main>
 

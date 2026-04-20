@@ -69,15 +69,10 @@ This approach reduces API calls and significantly improves performance.
 
 GameTracker/
 │
-
 ├── functions.php # Core logic (API, hooks, setup)
-
 ├── single-game.php # Single game template
-
 ├── page-all-games.php # Games listing page
-
 ├── assets/ # CSS / JS
-
 └── README.md
 
 ---
@@ -96,7 +91,7 @@ It demonstrates:
 
 ## Status
 
-Work in progress — actively developed and extended with new features.
+🚧 Work in progress — actively developed and extended with new features.
 
 ---
 
@@ -109,4 +104,3 @@ The goal is to evolve GameTracker into a fully functional application with user 
 ## Author
 
 Created as a portfolio project focused on becoming a job-ready WordPress / Web Developer.
-
