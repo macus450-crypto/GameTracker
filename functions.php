@@ -1,5 +1,11 @@
 <?php
 
+function gametracker_theme_setup() {
+    add_theme_support('title-tag');
+    add_theme_support('post-thumbnails');
+}
+add_action('after_setup_theme', 'gametracker_theme_setup');
+
 function gametracker_enqueue_assets() {
     wp_enqueue_style(
         'gametracker-main-style',
@@ -50,35 +56,79 @@ add_action('add_meta_boxes', 'gametracker_add_game_meta_boxes');
 function gametracker_game_times_callback($post) {
     $main_story_hours = get_post_meta($post->ID, '_main_story_hours', true);
     $completionist_hours = get_post_meta($post->ID, '_completionist_hours', true);
+
+    wp_nonce_field('gametracker_save_game_times', 'gametracker_game_times_nonce');
     ?>
 
     <p>
         <label for="main_story_hours"><strong>Main Story Hours:</strong></label><br>
-        <input type="number" id="main_story_hours" name="main_story_hours" value="<?php echo esc_attr($main_story_hours); ?>" style="width: 100%;">
+        <input
+            type="number"
+            id="main_story_hours"
+            name="main_story_hours"
+            value="<?php echo esc_attr($main_story_hours); ?>"
+            min="0"
+            style="width: 100%;"
+        >
     </p>
 
     <p>
         <label for="completionist_hours"><strong>Completionist Hours:</strong></label><br>
-        <input type="number" id="completionist_hours" name="completionist_hours" value="<?php echo esc_attr($completionist_hours); ?>" style="width: 100%;">
+        <input
+            type="number"
+            id="completionist_hours"
+            name="completionist_hours"
+            value="<?php echo esc_attr($completionist_hours); ?>"
+            min="0"
+            style="width: 100%;"
+        >
     </p>
 
     <?php
 }
 
 function gametracker_save_game_meta($post_id) {
-    if (array_key_exists('main_story_hours', $_POST)) {
+    if (
+        !isset($_POST['gametracker_game_times_nonce']) ||
+        !wp_verify_nonce(
+            sanitize_text_field(wp_unslash($_POST['gametracker_game_times_nonce'])),
+            'gametracker_save_game_times'
+        )
+    ) {
+        return;
+    }
+
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return;
+    }
+
+    if (wp_is_post_revision($post_id)) {
+        return;
+    }
+
+    if (!current_user_can('edit_post', $post_id)) {
+        return;
+    }
+
+    if (isset($_POST['main_story_hours'])) {
+        $main_story_hours = wp_unslash($_POST['main_story_hours']);
+        $main_story_hours = ($main_story_hours === '') ? '' : absint($main_story_hours);
+
         update_post_meta(
             $post_id,
             '_main_story_hours',
-            sanitize_text_field($_POST['main_story_hours'])
+            $main_story_hours
         );
     }
 
-    if (array_key_exists('completionist_hours', $_POST)) {
+    if (isset($_POST['completionist_hours'])) {
+        $completionist_hours = wp_unslash($_POST['completionist_hours']);
+        $completionist_hours = ($completionist_hours === '') ? '' : absint($completionist_hours);
+
         update_post_meta(
             $post_id,
             '_completionist_hours',
-            sanitize_text_field($_POST['completionist_hours'])
+            $completionist_hours
         );
     }
 }
