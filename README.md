@@ -1,8 +1,13 @@
 # 🎮 GameTracker
 
-GameTracker is a custom WordPress theme built as a gaming backlog and discovery web application. The project combines WordPress theme development with a custom game post type, RAWG API integration, cached external data, custom templates, and a modern dark gaming UI.
+![WordPress](https://img.shields.io/badge/WordPress-custom%20theme-21759B?logo=wordpress&logoColor=white)
+![PHP](https://img.shields.io/badge/PHP-custom%20theme%20logic-777BB4?logo=php&logoColor=white)
+![RAWG API](https://img.shields.io/badge/RAWG-API%20integration-red)
+![Status](https://img.shields.io/badge/status-portfolio%20MVP-blue)
 
-The main goal of the project is to practice building a real WordPress-based application without relying on ready-made page builders or heavy plugins. It focuses on custom PHP, WordPress hooks, template files, API handling, data sanitization, escaping, and performance-aware development.
+GameTracker is a custom WordPress theme built as a portfolio-stage game discovery and backlog management application. It combines locally managed WordPress game entries with an external RAWG-powered game catalog, custom post metadata, dedicated templates, API response caching, fallback handling, and a responsive dark gaming interface.
+
+The project was built without page builders or heavy plugin dependencies. Its purpose is to demonstrate practical WordPress development in an application-like context: custom PHP, WordPress hooks, custom post types, meta boxes, template architecture, external REST API integration, caching, sanitization, escaping, and clear separation between CMS-managed content and third-party API data.
 
 ---
 
@@ -18,148 +23,140 @@ The main goal of the project is to practice building a real WordPress-based appl
 
 ---
 
-## 🚀 Current Features
+## Overview
+
+GameTracker currently has two main content areas:
+
+1. **Local WordPress game entries**  
+   Games created and managed inside the WordPress admin panel through a custom `game` post type.
+
+2. **External game discovery catalog**  
+   Games fetched from the RAWG Video Games Database API and displayed on a dedicated `All Games` page.
+
+This makes the project more than a static WordPress theme. It includes real data handling, API communication, caching, error fallback logic, custom admin fields, dynamic templates, and frontend presentation built around a clear product idea.
+
+---
+
+## Core Features
 
 - Custom WordPress theme structure
 - Custom post type: `game`
-- Custom meta fields for game completion times:
+- Featured image support for local game posts
+- Custom game metadata:
   - Main Story hours
   - Completionist hours
-- Homepage section with locally managed WordPress game posts
-- Single game template for individual `game` posts
-- External game catalog fetched from the RAWG API
-- All Games page template with API-based game cards
-- API pagination using WordPress `paginate_links()`
-- RAWG game data displayed with:
+- Admin meta box for editing game completion times
+- Homepage with hero section, search UI, and selected local game cards
+- Single game template for local WordPress `game` posts
+- Dedicated `All Games` page template
+- RAWG API integration for external game discovery
+- Paginated external game catalog
+- RAWG game cards with:
   - title
   - background image
   - release date
   - rating
   - genres
   - external RAWG details link
-- Placeholder image fallback for games without an image
-- API response caching with WordPress Transients
-- Separate cache keys based on API query arguments
-- Fallback to the last successful API response when the API request fails
+- Placeholder image fallback for games without a background image
+- WordPress Transients API caching
+- Separate cache keys for different API query arguments
+- Fallback to the last successful RAWG response when the API request fails
 - Responsive dark UI styled with custom CSS
-- WordPress-safe output escaping with functions such as `esc_html()`, `esc_url()`, and `esc_attr()`
+- WordPress-safe output escaping for dynamic frontend values
 
 ---
 
-## 🧠 What This Project Demonstrates
+## Technical Highlights
 
-This project was created to show practical WordPress development skills beyond basic theme editing.
-
-It demonstrates:
-
-- WordPress theme development from custom files
-- Working with WordPress hooks and actions
-- Registering a Custom Post Type
-- Creating and saving custom meta boxes
-- Building custom page templates
-- Building custom single post templates
-- Using `WP_Query` for custom content loops
-- Integrating an external REST API in WordPress
-- Handling API errors safely
-- Caching external API responses for better performance
-- Separating dynamic API content from local WordPress content
-- Writing safer PHP output with escaping functions
-- Structuring a portfolio project around real application features
+| Area | Implementation |
+| --- | --- |
+| Theme setup | `title-tag`, post thumbnails, custom CSS and JS enqueueing |
+| Content model | Custom `game` post type registered through WordPress hooks |
+| Admin UI | Custom meta box for game completion time fields |
+| Data persistence | Main Story and Completionist values saved as post meta |
+| Security checks | Nonce verification, autosave guard, revision guard, capability check |
+| External API | RAWG catalog fetched with WordPress HTTP functions |
+| Performance | API responses cached with unique transient keys |
+| Resilience | Last successful API response reused as fallback data |
+| Templates | Separate homepage, catalog page, and single game templates |
+| Frontend | Responsive card grid, dark UI, buttons, sticky header, and reusable layout containers |
 
 ---
 
-## 🛠️ Technologies Used
+## How It Works
 
-- WordPress
-- PHP
-- HTML5
-- CSS3
-- JavaScript
-- RAWG Video Games Database API
-- WordPress Transients API
-- WordPress Custom Post Types
-- WordPress Meta Boxes
-- WordPress Template System
+1. WordPress loads the custom theme and enqueues `assets/css/main.css` and `assets/js/main.js`.
+2. The theme registers a custom `game` post type for locally managed game entries.
+3. Game posts can store additional completion-time metadata through an admin meta box.
+4. The homepage displays selected local `game` posts using a custom `WP_Query` loop.
+5. The `All Games` page calls the RAWG API through the `gametracker_get_rawg_games()` helper function.
+6. RAWG responses are cached with WordPress transients to reduce repeated external requests.
+7. If the API request fails, the theme attempts to use the last successful RAWG response before returning an empty catalog.
+8. Dynamic values are escaped before being rendered in templates.
 
 ---
 
-## 📁 Project Structure
+## RAWG API Integration
 
-```text
- gametracker-theme/
- ├── assets/
- │   ├── css/
- │   │   └── main.css
- │   ├── images/
- │   │   └── placeholder.jpg
- │   ├── js/
- │   │   └── main.js
- │   └── screenshots/
- │       ├── all_games_page.png
- │       └── home_page.png
- ├── inc/
- │   └── .gitkeep
- ├── template-parts/
- │   └── .gitkeep
- ├── footer.php
- ├── functions.php
- ├── header.php
- ├── index.php
- ├── page-all-games.php
- ├── single-game.php
- ├── style.css
- └── README.md
-```
-
----
-
-## 🔌 RAWG API Integration
-
-The All Games page uses the RAWG API to fetch external game data.
-
-The main API logic is handled in:
-
-```text
-functions.php
-```
-
-Main function:
+The main API logic is handled in `functions.php`:
 
 ```php
 gametracker_get_rawg_games($page = 1, $page_size = 12, $search = '', $ordering = '', $genre = '')
 ```
 
-The function is responsible for:
+The function handles:
 
-- validating pagination arguments
-- preparing API query parameters
-- generating a unique transient cache key
-- checking cached data before making a request
-- fetching games with `wp_remote_get()`
-- checking for WordPress HTTP errors
-- checking the HTTP response status code
-- decoding the JSON response
-- returning fallback data when the API request fails
-- storing successful API responses in transients
+- pagination argument normalization
+- API key loading from the `RAWG_API_KEY` constant
+- optional search, ordering, and genre parameters at helper-function level
+- query argument preparation with `add_query_arg()`
+- request execution with `wp_remote_get()`
+- HTTP error and status-code checks
+- JSON decoding and response validation
+- transient cache lookup before making a new API request
+- successful response caching
+- fallback to the last successful API response when possible
 
----
+Current template usage:
 
-## ⚡ Caching Strategy
+```php
+$games_data = gametracker_get_rawg_games($paged, 12);
+```
 
-GameTracker uses the WordPress Transients API to reduce unnecessary API calls and improve page performance.
-
-Current caching behavior:
-
-- page 1 is cached for 1 hour
-- deeper paginated pages are cached for 10 minutes
-- the last successful API response is stored for 1 day
-- unique cache keys are generated from query arguments using `md5(json_encode(...))`
-
-This approach makes the external game catalog more stable and reduces the risk of the page breaking when the API is temporarily unavailable.
+This means the current `All Games` page uses the paginated catalog view. Search, ordering, and genre filtering are already supported by the helper function, but they are not yet connected to a frontend filter/search form.
 
 ---
 
-## 🧩 WordPress Features
+## Caching Strategy
+
+GameTracker uses the WordPress Transients API to cache external RAWG responses.
+
+| Data | Cache duration |
+| --- | --- |
+| First catalog page | 1 hour |
+| Deeper paginated pages | 10 minutes |
+| Last successful API response | 1 day |
+
+Cache keys are generated from the active API query arguments:
+
+```php
+$transient_key = 'gametracker_rawg_games_' . md5(json_encode($transient_args));
+```
+
+This prevents different catalog requests from overwriting each other and reduces unnecessary API calls.
+
+The fallback transient:
+
+```php
+gametracker_rawg_last_success
+```
+
+keeps the catalog usable when the external API temporarily fails, returns a non-200 status code, or returns an unexpected response body.
+
+---
+
+## WordPress Implementation
 
 ### Custom Post Type
 
@@ -175,147 +172,224 @@ The `game` post type supports:
 - editor
 - featured image
 
-### Custom Meta Boxes
+### Custom Meta Box
 
-The project adds custom fields for game completion times:
+The project adds a `Game Times` meta box for local game posts.
 
-- Main Story Hours
-- Completionist Hours
+Stored fields:
 
-These values are saved as post meta and displayed on the single game page.
+- `_main_story_hours`
+- `_completionist_hours`
 
-### Custom Templates
+These values are displayed on the homepage game cards and on the single game page.
 
-The project includes custom templates for:
+### Templates
+
+The theme includes separate templates for:
 
 - homepage layout
-- All Games page
-- single game page
+- external game catalog page
+- single local game page
+- header and footer layout
 
 ---
 
-## 🖥️ Pages
+## Security and Data Handling
 
-### Homepage
+The project applies several WordPress-oriented safety practices:
 
-The homepage introduces the project and displays selected local WordPress `game` posts using `WP_Query`.
+- the RAWG API key is read from a private constant and should not be committed to the repository
+- meta box saving is protected with nonce verification
+- autosaves and post revisions are ignored during metadata saving
+- user capability is checked before updating post metadata
+- numeric game-time values are normalized with `absint()`
+- dynamic output is escaped with WordPress escaping functions such as `esc_html()`, `esc_url()`, and `esc_attr()`
+- external RAWG links use `target="_blank"` together with `rel="noopener noreferrer"`
+- API failures return safe empty data or cached fallback data instead of exposing raw errors on the frontend
 
-### All Games Page
+---
 
-The All Games page fetches game data from the RAWG API and displays it in a responsive grid.
+## Pages and Templates
 
-Each card can include:
+### Homepage — `index.php`
 
-- game image
+The homepage includes:
+
+- hero section
+- primary call-to-action linking to the `All Games` page
+- visual search section prepared for future functionality
+- selected local `game` posts loaded with `WP_Query`
+
+The search form is currently a UI element only and is not yet connected to dynamic RAWG search.
+
+### All Games Page — `page-all-games.php`
+
+The `All Games` page displays RAWG API results in a responsive card grid.
+
+Each card can show:
+
+- game image or fallback placeholder
 - game title
 - release date
 - RAWG rating
 - genres
-- external details link
+- external RAWG details link
 
-### Single Game Page
+The page uses WordPress `paginate_links()` for catalog pagination.
 
-The single game page displays a locally created WordPress `game` post with:
+### Single Game Page — `single-game.php`
+
+The single game template displays locally managed WordPress `game` posts with:
 
 - title
 - featured image
-- main story time
-- completionist time
+- Main Story hours
+- Completionist hours
 - post content
+
+### Header and Footer
+
+The header includes GameTracker branding and navigation. Some navigation items, such as `My Backlog`, `Stats`, and `Login`, are placeholders for planned features.
+
+The footer displays a short project message and uses the current year dynamically.
 
 ---
 
-## 🔐 API Key Configuration
+## Project Structure
 
-The RAWG API key should not be committed to the repository.
+```text
+GameTracker/
+├── assets/
+│   ├── css/
+│   │   └── main.css
+│   ├── images/
+│   │   └── placeholder.jpg
+│   ├── js/
+│   │   └── main.js
+│   └── screenshots/
+│       ├── all_games_page.png
+│       └── home_page.png
+├── inc/
+│   └── .gitkeep
+├── template-parts/
+│   └── .gitkeep
+├── footer.php
+├── functions.php
+├── header.php
+├── index.php
+├── page-all-games.php
+├── single-game.php
+├── style.css
+└── README.md
+```
 
-Recommended local setup:
+`style.css` contains the WordPress theme metadata. The main visual styling is handled in `assets/css/main.css`.
+
+---
+
+## Local Setup
+
+### Requirements
+
+- Local WordPress environment, for example LocalWP, XAMPP, Laragon, Docker, or a standard local server setup
+- PHP version compatible with your WordPress installation
+- RAWG API key
+
+### Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/macus450-crypto/GameTracker.git
+```
+
+2. Move or copy the project folder into your WordPress themes directory:
+
+```text
+wp-content/themes/GameTracker/
+```
+
+3. Add your RAWG API key in `wp-config.php` or another private local configuration file:
 
 ```php
 define('RAWG_API_KEY', 'your_rawg_api_key_here');
 ```
 
-This constant should be placed in a local configuration file such as `wp-config.php` or another private file that is not committed to Git.
-
----
-
-## 🧪 How to Run Locally
-
-1. Install WordPress locally, for example with LocalWP, XAMPP, Laragon, or another local WordPress environment.
-2. Copy the `gametracker-theme` folder into:
+4. Activate the theme in the WordPress admin panel:
 
 ```text
-wp-content/themes/
+Appearance → Themes → GameTracker → Activate
 ```
 
-3. Activate the theme in the WordPress admin panel.
-4. Add your RAWG API key as the `RAWG_API_KEY` constant.
-5. Create a WordPress page named `All Games`.
+5. Create a WordPress page called `All Games`.
+
 6. Assign the `All Games Page` template to that page.
-7. Refresh permalinks in WordPress:
+
+7. Refresh permalinks:
 
 ```text
 Settings → Permalinks → Save Changes
 ```
 
-8. Add a few local `game` posts if you want to test the homepage and single game template.
+8. Add a few local `game` posts in the WordPress admin panel to test the homepage and single game template.
 
 ---
 
-## ✅ Current Project Status
+## Current Status
 
-The project is currently a functional portfolio-stage WordPress theme.
+GameTracker is currently a functional portfolio MVP.
 
-Implemented areas:
+Implemented:
 
-- custom theme layout
-- custom game post type
-- custom game meta fields
-- RAWG API fetching
-- API caching
+- custom WordPress theme
+- custom `game` post type
+- custom game-time metadata
+- admin meta box for completion times
+- local game display on the homepage
+- single game template
+- RAWG API catalog page
 - API pagination
-- responsive game cards
-- basic single game pages
-- screenshot-ready UI
+- API response caching
+- fallback to the last successful API response
+- responsive dark UI
 
-Not yet implemented as full production features:
+Not implemented yet as production features:
 
 - user accounts
-- personal backlog system
+- real personal backlog system
+- login/register flow
+- user-specific game statuses
 - internal user rating system
-- comments/reviews system
-- dynamic frontend search form
+- reviews or comments
+- working frontend search form
 - advanced filtering UI
-- internal RAWG game detail pages
+- internal detail pages for RAWG games
+- dashboard/statistics logic
 
 ---
 
-## 🔮 Planned Improvements
+## Roadmap
 
-Future development ideas:
+Planned improvements:
 
-- user registration and login
-- personal game backlog
-- game status tracking, for example: planned, playing, completed, dropped
-- user rating system
-- user comments or short reviews
-- dynamic search connected to the RAWG API
-- filtering by genre, platform, rating, and release date
-- internal game detail pages based on RAWG data
-- better error messages for failed API requests
-- loading states and empty states
-- improved accessibility
-- further code separation into files inside `/inc`
-- nonce verification for custom meta box saving
-- more advanced security checks for admin-side saving logic
+- connect the homepage search UI to RAWG API search
+- add genre, platform, rating, and ordering filters
+- build internal RAWG game detail pages
+- add user registration and login
+- create personal backlog functionality
+- add game statuses such as planned, playing, completed, and dropped
+- add user ratings or short reviews
+- improve empty states and API error messages
+- add loading states for API-driven views
+- improve accessibility and keyboard navigation
+- split larger logic from `functions.php` into files under `/inc`
+- add reusable template parts
+- add automated checks or tests for key helper functions
 
 ---
 
-## 🎯 Purpose
+## Purpose
 
-GameTracker was built as a practical portfolio project for learning and demonstrating WordPress development in a more application-like context.
+GameTracker was created to show how WordPress can be used as a foundation for a custom, data-driven web application rather than only a traditional content website.
 
-The project is intended to show that WordPress can be used not only for simple websites, but also for custom data-driven interfaces that combine local content, external APIs, caching, custom templates, and structured PHP logic.
-
-
-
+The project demonstrates the ability to combine CMS-managed content, external API data, caching, custom templates, and safer PHP handling into one coherent portfolio application.
