@@ -300,7 +300,7 @@ GameTracker/
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/macus450-crypto/GameTracker.git
+git clone https://github.com/Macus77a/GameTracker.git
 ```
 
 2. Move or copy the project folder into your WordPress themes directory:
